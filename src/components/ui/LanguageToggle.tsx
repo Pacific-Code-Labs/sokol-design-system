@@ -1,5 +1,6 @@
 import * as React from "react";
 import { cn } from "../../lib/cn";
+import { Button } from "./Button";
 
 export type ToggleLanguage = "es" | "en";
 export interface LanguageToggleProps extends Omit<React.HTMLAttributes<HTMLDivElement>, "onChange"> {
@@ -31,11 +32,11 @@ export const LanguageToggle = React.forwardRef<HTMLDivElement, LanguageTogglePro
   ({ value, onChange, label, labels, className, ...props }, ref) => {
     const next = value === "es" ? "en" : "es";
     return <div ref={ref} role="group" aria-label={label}
-      className={cn("inline-flex shrink-0 rounded-full border border-border bg-card p-1", className)} {...props}>
-      <button type="button" aria-label={labels[next]} title={labels[next]} onClick={() => onChange(next)}
-        className="inline-flex h-8 items-center justify-center rounded-full px-2 text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+      className={cn("inline-flex shrink-0", className)} {...props}>
+      <Button variant="outline" size="md" aria-label={labels[next]} title={labels[next]} onClick={() => onChange(next)}
+        className="h-10 w-10 px-0">
         <Flag language={next} />
-      </button>
+      </Button>
     </div>;
   }
 );
