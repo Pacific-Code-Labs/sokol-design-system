@@ -232,3 +232,12 @@
   .fc-activity-bar, .lang-anim-in { animation: none; }
   .lang-anim-out { transition: none; }
 }
+
+/* Native option surfaces follow the active theme, including OS-rendered popup menus. */
+select { color-scheme: light; }
+.dark select { color-scheme: dark; }
+select option, select optgroup {
+  background-color: hsl(var(--popover));
+  color: hsl(var(--popover-foreground));
+  font: inherit;
+}

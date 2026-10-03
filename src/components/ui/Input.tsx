@@ -1,4 +1,5 @@
 import * as React from "react";
+import { ChevronDown } from "lucide-react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../../lib/cn";
 
@@ -57,14 +58,17 @@ export interface SelectProps
 
 export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
   ({ inputSize, invalid, className, children, "aria-invalid": ariaInvalid, ...rest }, ref) => (
-    <select
-      ref={ref}
-      aria-invalid={invalid ?? ariaInvalid}
-      className={cn(fieldVariants({ inputSize }), "cursor-pointer pr-8", className)}
-      {...rest}
-    >
-      {children}
-    </select>
+    <span className="relative inline-flex w-full">
+      <select
+        ref={ref}
+        aria-invalid={invalid ?? ariaInvalid}
+        className={cn(fieldVariants({ inputSize }), className, "cursor-pointer appearance-none pr-10")}
+        {...rest}
+      >
+        {children}
+      </select>
+      <ChevronDown aria-hidden="true" className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+    </span>
   )
 );
 Select.displayName = "Select";

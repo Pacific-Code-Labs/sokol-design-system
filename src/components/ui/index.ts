@@ -228,3 +228,5 @@ export {
   FormSkeleton,
   ShellSkeleton,
 } from "./skeleton-layouts";
+
+export { LanguageToggle, type LanguageToggleProps, type ToggleLanguage } from "./LanguageToggle";
