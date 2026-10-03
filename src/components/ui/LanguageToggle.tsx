@@ -26,18 +26,17 @@ function Flag({ language }: { language: ToggleLanguage }) {
   </svg>;
 }
 
-/** The same accessible, two-choice control on landing, auth and product navigation. */
+/** One button shows the language available on the next click. */
 export const LanguageToggle = React.forwardRef<HTMLDivElement, LanguageToggleProps>(
-  ({ value, onChange, label, labels, className, ...props }, ref) => <div
-    ref={ref} role="group" aria-label={label}
-    className={cn("inline-flex shrink-0 items-center gap-1 rounded-full border border-border bg-card p-1", className)} {...props}>
-    {(["es", "en"] as const).map((language) => <button key={language} type="button"
-      aria-label={labels[language]} title={labels[language]} aria-pressed={value === language}
-      onClick={() => { if (language !== value) onChange(language); }}
-      className={cn("inline-flex h-8 items-center justify-center gap-1.5 rounded-full px-2 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-        value === language ? "bg-primary/10 text-primary ring-1 ring-primary/30" : "text-muted-foreground hover:bg-muted hover:text-foreground")}>
-      <Flag language={language} /><span>{language.toUpperCase()}</span>
-    </button>)}
-  </div>
+  ({ value, onChange, label, labels, className, ...props }, ref) => {
+    const next = value === "es" ? "en" : "es";
+    return <div ref={ref} role="group" aria-label={label}
+      className={cn("inline-flex shrink-0 rounded-full border border-border bg-card p-1", className)} {...props}>
+      <button type="button" aria-label={labels[next]} title={labels[next]} onClick={() => onChange(next)}
+        className="inline-flex h-8 items-center justify-center gap-1.5 rounded-full px-2 text-xs font-semibold text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+        <Flag language={next} /><span>{next.toUpperCase()}</span>
+      </button>
+    </div>;
+  }
 );
 LanguageToggle.displayName = "LanguageToggle";
