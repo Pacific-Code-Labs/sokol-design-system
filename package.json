@@ -1,6 +1,6 @@
 {
   "name": "@pacific-code-labs/sokol-design-system",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "type": "module",
   "description": "S\u00f3k\u00f6l shared design system \u2014 tokens, Tailwind preset, primitives, theme engine, i18n runtime, app shell and published-content reader. Installed as TypeScript source from a git tag.",
   "license": "UNLICENSED",

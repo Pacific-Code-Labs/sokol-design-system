@@ -33,8 +33,8 @@ export const LanguageToggle = React.forwardRef<HTMLDivElement, LanguageTogglePro
     return <div ref={ref} role="group" aria-label={label}
       className={cn("inline-flex shrink-0 rounded-full border border-border bg-card p-1", className)} {...props}>
       <button type="button" aria-label={labels[next]} title={labels[next]} onClick={() => onChange(next)}
-        className="inline-flex h-8 items-center justify-center gap-1.5 rounded-full px-2 text-xs font-semibold text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-        <Flag language={next} /><span>{next.toUpperCase()}</span>
+        className="inline-flex h-8 items-center justify-center rounded-full px-2 text-foreground transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+        <Flag language={next} />
       </button>
     </div>;
   }
