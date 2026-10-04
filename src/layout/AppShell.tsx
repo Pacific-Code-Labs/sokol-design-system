@@ -199,8 +199,8 @@ export function AppShell(props: AppShellProps) {
       <div aria-hidden={compact && collapsed ? true : undefined} ref={element => { if (element) element.inert = compact && collapsed; }} className={cn("relative z-50 hidden shrink-0 lg:flex", compact && "overflow-hidden transition-[width] duration-[250ms]", compact && (collapsed ? "w-0" : "w-60"))}>
         <Sidebar {...props} collapsed={compact ? false : collapsed} onToggle={toggle} />
       </div>
-      {compact && <button type="button" onClick={toggle} aria-label={collapsed ? props.labels.expand : props.labels.collapse}
-        className={cn("fixed top-1/2 z-40 hidden h-20 w-7 -translate-y-1/2 items-center justify-center rounded-r-xl border border-l-0 border-border bg-card text-muted-foreground shadow-sm transition-[left,background] duration-[250ms] hover:bg-sidebar-accent lg:flex", collapsed ? "-left-5 hover:left-0" : "left-[220px] hover:left-60")}>
+      {compact && <button type="button" onClick={toggle} aria-expanded={!collapsed} data-state={collapsed ? "collapsed" : "expanded"} aria-label={collapsed ? props.labels.expand : props.labels.collapse}
+        className={cn("fixed top-1/2 z-40 hidden h-20 w-7 -translate-y-1/2 items-center justify-center rounded-r-xl border border-l-0 border-border bg-card text-muted-foreground shadow-sm transition-[left,background] duration-[250ms] hover:bg-sidebar-accent before:absolute before:-left-6 before:-right-2 before:-top-2 before:-bottom-2 before:content-[''] lg:flex", collapsed ? "-left-5 hover:left-0" : "left-[220px] hover:left-60")}>
         {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
       </button>}
 
