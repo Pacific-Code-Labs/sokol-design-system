@@ -20,7 +20,8 @@
     "./styles": "./src/tokens/tokens.css",
     "./tokens.css": "./src/tokens/tokens.css",
     "./tailwind-preset": "./tailwind.preset.js",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./brand/assets/*": "./src/brand/assets/*"
   },
   "scripts": {
     "typecheck": "tsc -p tsconfig.json --noEmit",

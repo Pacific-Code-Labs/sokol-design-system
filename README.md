@@ -48,3 +48,15 @@ Local work on the DS and an app together: `pnpm link ../design-system` in the ap
 2. bump `version` in `package.json`, commit
 3. `git tag vX.Y.Z && git push origin main vX.Y.Z`
 4. bump the tag in each consumer's `package.json`
+
+## Approved brand assets
+
+`SOKOL_BRAND_ASSETS` exposes bundler-resolved light/dark wordmarks, the standalone symbol,
+SVG favicon, Apple touch icon and Spanish/English social cards. Pass the logo fields to
+`BrandLogo`; use `variant="mark"` for collapsed sidebars and assistant avatars. Keep CMS
+URLs as overrides. The wordmark already contains the shield; do not add another mark beside it.
+
+Raw masters are also exported at `@pacific-code-labs/sokol-design-system/brand/assets/*`.
+For crawler metadata and manifests, copy assets to the host's public directory so their URLs
+are stable. The workspace's `brand/sync-assets.mjs` refreshes public assets in all three apps
+and the packaged masters here. This package has no HTML shell or favicon of its own.
