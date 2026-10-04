@@ -7,6 +7,7 @@ export interface NavItem {
   href: string;
   label: string;
   icon: LucideIcon;
+  end?: boolean;
 }
 
 export interface NavGroup {
@@ -32,10 +33,12 @@ export interface AppShellProps {
   footer?: (collapsed: boolean) => ReactNode;
   /** Accessible labels for the collapse/close controls. */
   labels: { collapse: string; expand: string; close: string };
+  navigationStyle?: "default" | "compact";
+  sidebarStorageKey?: string;
   children: ReactNode;
 }
 
-const isActive = (location: string, href: string) => location === href || location.startsWith(`${href}/`);
+const isActive = (location: string, href: string, end = false) => location === href || (!end && location.startsWith(`${href}/`));
 
 // The one shared "selected" treatment: dashboard link, active item and open group header.
 const SELECTED = "bg-sidebar-primary text-sidebar-primary-foreground";
@@ -52,8 +55,11 @@ function Sidebar({
   collapsed,
   onToggle,
   onClose,
+  navigationStyle,
 }: Omit<AppShellProps, "topbar" | "children"> & { collapsed: boolean; onToggle?: () => void; onClose?: () => void }) {
-  const activeGroup = groups.find((g) => g.items.some((i) => isActive(location, i.href)))?.key ?? "";
+  const compact = navigationStyle === "compact";
+  const selected = compact ? "bg-primary/10 text-primary font-semibold" : SELECTED;
+  const activeGroup = groups.find((g) => g.items.some((i) => isActive(location, i.href, i.end)))?.key ?? "";
   const [openGroup, setOpenGroup] = useState(activeGroup);
   // Landing on a sub-page opens its section.
   useEffect(() => {
@@ -67,7 +73,7 @@ function Sidebar({
 
   const link = (item: NavItem, nested: boolean) => {
     const Icon = item.icon;
-    const active = isActive(location, item.href);
+    const active = isActive(location, item.href, item.end);
     return (
       <Hint key={item.href} label={item.label} side="right" disabled={!collapsed}>
         <button
@@ -76,8 +82,8 @@ function Sidebar({
           aria-current={active ? "page" : undefined}
           className={cn(
             "flex w-full items-center gap-3 rounded-lg py-2 text-sm transition-all",
-            collapsed ? "justify-center px-2" : nested ? "pl-6 pr-3" : "px-3",
-            active ? SELECTED : IDLE,
+            compact ? "px-3 py-[9px] font-medium" : collapsed ? "justify-center px-2" : nested ? "pl-6 pr-3" : "px-3",
+            active ? selected : IDLE,
           )}
         >
           <Icon className={cn("shrink-0", collapsed ? "h-5 w-5" : "h-4 w-4")} />
@@ -92,10 +98,10 @@ function Sidebar({
     <aside
       className={cn(
         "relative flex h-full flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground transition-all duration-300",
-        collapsed ? "w-16" : "w-64",
+        compact ? "w-60 overflow-hidden" : collapsed ? "w-16" : "w-64",
       )}
     >
-      <div className={cn("flex h-14 items-center border-b border-sidebar-border", collapsed ? "justify-center px-2" : "px-4")}>
+      <div className={cn("flex shrink-0 items-center border-b border-sidebar-border", compact ? "mx-4 px-2 pb-4 pt-5" : "h-14", !compact && (collapsed ? "justify-center px-2" : "px-4"))}>
         {brand(collapsed)}
         {onClose && (
           <button type="button" onClick={onClose} className="ml-auto rounded-md p-1.5 hover:bg-sidebar-accent" aria-label={labels.close}>
@@ -104,7 +110,7 @@ function Sidebar({
         )}
       </div>
 
-      {onToggle && (
+      {onToggle && !compact && (
         <button
           type="button"
           onClick={onToggle}
@@ -115,7 +121,7 @@ function Sidebar({
         </button>
       )}
 
-      <nav className="flex-1 space-y-1 overflow-y-auto p-2">
+      <nav className={cn("min-h-0 flex-1 overflow-y-auto", compact ? "space-y-0.5 px-4 py-3" : "space-y-1 p-2")}>
         {topItems.map((item) => link(item, false))}
         {groups.map((group) => {
           const open = collapsed || openGroup === group.key;
@@ -128,29 +134,30 @@ function Sidebar({
                   onClick={() => setOpenGroup(openGroup === group.key ? "" : group.key)}
                   aria-expanded={open}
                   className={cn(
-                    "flex w-full items-center gap-2 rounded-lg px-3 py-2 text-[10px] font-bold uppercase tracking-widest transition-colors",
-                    open || group.key === activeGroup ? SELECTED : IDLE,
+                    "flex w-full items-center gap-2 rounded-lg px-3 py-2 transition-colors",
+                    compact ? "text-sm font-medium" : "text-[10px] font-bold uppercase tracking-widest",
+                    open || group.key === activeGroup ? selected : IDLE,
                   )}
                 >
                   <GroupIcon className="h-3.5 w-3.5" />
                   <span className="flex-1 text-left">{group.label}</span>
-                  <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", !open && "-rotate-90")} />
+                  <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", compact ? open && "rotate-180" : !open && "-rotate-90")} />
                 </button>
               )}
               <div
                 className={cn(
-                  "grid transition-all duration-300 ease-out",
+                  "grid transition-[grid-template-rows] duration-200 ease-out",
                   open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
                 )}
               >
-                <div className="space-y-1 overflow-hidden pt-1">{group.items.map((item) => link(item, true))}</div>
+                <div className={cn("min-h-0 space-y-0.5 overflow-hidden", compact ? "pl-3" : "pt-1")}>{group.items.map((item) => link(item, true))}</div>
               </div>
             </div>
           );
         })}
       </nav>
 
-      {footer && <div className="border-t border-sidebar-border p-2">{footer(collapsed)}</div>}
+      {footer && <div className={cn("shrink-0 border-t border-sidebar-border", compact ? "px-4 pb-4 pt-2" : "p-2")}>{footer(collapsed)}</div>}
     </aside>
   );
 }
@@ -162,7 +169,14 @@ function Sidebar({
  */
 export function AppShell(props: AppShellProps) {
   const { topbar, children, location } = props;
-  const [collapsed, setCollapsed] = useState(false);
+  const compact = props.navigationStyle === "compact";
+  const [collapsed, setCollapsed] = useState(() => {
+    try { return !!props.sidebarStorageKey && localStorage.getItem(props.sidebarStorageKey) === "true"; } catch { return false; }
+  });
+  const toggle = () => setCollapsed((value) => {
+    try { if (props.sidebarStorageKey) localStorage.setItem(props.sidebarStorageKey, String(!value)); } catch { /* Storage is optional. */ }
+    return !value;
+  });
   const [mobileRender, setMobileRender] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const mainRef = useRef<HTMLElement>(null);
@@ -181,10 +195,14 @@ export function AppShell(props: AppShellProps) {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
-      <div className="hidden shrink-0 lg:flex">
-        <Sidebar {...props} collapsed={collapsed} onToggle={() => setCollapsed((c) => !c)} />
+    <div className="flex h-[100dvh] overflow-hidden bg-background">
+      <div className={cn("hidden shrink-0 lg:flex", compact && "overflow-hidden transition-[width] duration-[250ms]", compact && (collapsed ? "w-0" : "w-60"))}>
+        <Sidebar {...props} collapsed={compact ? false : collapsed} onToggle={toggle} />
       </div>
+      {compact && <button type="button" onClick={toggle} aria-label={collapsed ? props.labels.expand : props.labels.collapse}
+        className={cn("fixed top-1/2 z-40 hidden h-20 w-7 -translate-y-1/2 items-center justify-center rounded-r-xl border border-l-0 border-border bg-card text-muted-foreground shadow-sm transition-[left,background] duration-[250ms] hover:bg-sidebar-accent lg:flex", collapsed ? "-left-5 hover:left-0" : "left-[220px] hover:left-60")}>
+        {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+      </button>}
 
       {mobileRender && (
         <div className="fixed inset-0 z-50 flex lg:hidden">
@@ -194,7 +212,7 @@ export function AppShell(props: AppShellProps) {
           />
           <div
             className={cn(
-              "relative z-10 h-full w-64 transition-transform duration-300 ease-out",
+              "relative z-10 h-full w-60 transition-transform duration-300 ease-out",
               mobileOpen ? "translate-x-0" : "-translate-x-full",
             )}
           >
@@ -205,7 +223,7 @@ export function AppShell(props: AppShellProps) {
 
       <div className="flex min-w-0 flex-1 flex-col">
         {topbar(openMobile)}
-        <main ref={mainRef} id="page-content" className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+        <main ref={mainRef} id="page-content" className="min-h-0 flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
           {children}
         </main>
       </div>
