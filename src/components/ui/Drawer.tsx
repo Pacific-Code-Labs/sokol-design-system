@@ -26,6 +26,10 @@ export interface DrawerProps {
   footer?: React.ReactNode;
   children: React.ReactNode;
   className?: string;
+  /** Localized accessible label for the close control. */
+  closeLabel?: string;
+  /** Layout classes for the independently scrolling body. */
+  bodyClassName?: string;
 }
 
 export function Drawer({
@@ -39,6 +43,8 @@ export function Drawer({
   footer,
   children,
   className,
+  closeLabel = "Close",
+  bodyClassName,
 }: DrawerProps) {
   const isRight = side === "right";
   return (
@@ -52,10 +58,9 @@ export function Drawer({
           )}
         />
         <Dialog.Content
-          onOpenAutoFocus={(e) => e.preventDefault()}
-          style={{ width: typeof width === "number" ? `min(${width}px, 100vw)` : width }}
+          style={{ width: typeof width === "number" ? `${width}px` : width, maxWidth: "100vw" }}
           className={cn(
-            "fixed inset-y-0 z-50 flex flex-col bg-card text-card-foreground shadow-[var(--shadow-glow)] outline-none",
+            "fixed inset-y-0 z-50 flex h-[100dvh] min-h-0 flex-col bg-card text-card-foreground shadow-[var(--shadow-glow)] outline-none",
             isRight
               ? cn(
                   "right-0 border-l border-border",
@@ -90,7 +95,7 @@ export function Drawer({
               )}
             </div>
             <Dialog.Close
-              aria-label="Close"
+              aria-label={closeLabel}
               className={cn(
                 "inline-flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-[calc(var(--radius)-0.2rem)]",
                 "text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",
@@ -102,7 +107,7 @@ export function Drawer({
           </div>
 
           {/* Body */}
-          <div className="flex-1 overflow-y-auto">{children}</div>
+          <div className={cn("min-h-0 flex-1 overflow-y-auto overscroll-contain", bodyClassName)}>{children}</div>
 
           {/* Footer */}
           {footer && <div className="flex-shrink-0 border-t border-border">{footer}</div>}
