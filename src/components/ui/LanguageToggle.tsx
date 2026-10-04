@@ -27,15 +27,15 @@ function Flag({ language }: { language: ToggleLanguage }) {
   </svg>;
 }
 
-/** One button shows the language available on the next click. */
+/** The flag shows the current language; the tooltip names the next-click action. */
 export const LanguageToggle = React.forwardRef<HTMLDivElement, LanguageToggleProps>(
   ({ value, onChange, label, labels, className, ...props }, ref) => {
     const next = value === "es" ? "en" : "es";
     return <div ref={ref} role="group" aria-label={label}
       className={cn("inline-flex shrink-0", className)} {...props}>
-      <Button variant="outline" size="md" aria-label={labels[next]} title={labels[next]} onClick={() => onChange(next)}
+      <Button variant="outline" size="md" aria-label={labels[value]} title={labels[next]} onClick={() => onChange(next)}
         className="h-10 w-10 px-0">
-        <Flag language={next} />
+        <Flag language={value} />
       </Button>
     </div>;
   }
