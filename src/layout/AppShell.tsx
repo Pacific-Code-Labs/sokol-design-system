@@ -196,7 +196,7 @@ export function AppShell(props: AppShellProps) {
 
   return (
     <div className="flex h-[100dvh] overflow-hidden bg-background">
-      <div className={cn("hidden shrink-0 lg:flex", compact && "overflow-hidden transition-[width] duration-[250ms]", compact && (collapsed ? "w-0" : "w-60"))}>
+      <div aria-hidden={compact && collapsed ? true : undefined} ref={element => { if (element) element.inert = compact && collapsed; }} className={cn("relative z-50 hidden shrink-0 lg:flex", compact && "overflow-hidden transition-[width] duration-[250ms]", compact && (collapsed ? "w-0" : "w-60"))}>
         <Sidebar {...props} collapsed={compact ? false : collapsed} onToggle={toggle} />
       </div>
       {compact && <button type="button" onClick={toggle} aria-label={collapsed ? props.labels.expand : props.labels.collapse}
